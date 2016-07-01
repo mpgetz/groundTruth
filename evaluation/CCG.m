@@ -117,21 +117,24 @@ end
 
 % OK so we now have the bin counts.  Now we need to rescale it.
 
-% remove bias due to edge effects - this should be vectorized
-if isempty(Epochs)
-    Bias = ones(nBins,1);
-else
-    nTerm = [HalfBins:-1:1 , 0.25 , 1:HalfBins];
-	Bias = zeros(nBins,1);
-    TotLen = 0;
-	for e=1:size(Epochs,1)
-        EpochLen = Epochs(e,2)-Epochs(e,1);
-        EpochBias = clip(EpochLen - nTerm*BinSize,0,inf)*BinSize;
-        Bias = Bias+EpochBias';
-        TotLen = TotLen + EpochLen;
-	end
-    Bias = Bias/TotLen/BinSize;
-end
+%% remove bias due to edge effects - this should be vectorized
+%if isempty(Epochs)
+%    Bias = ones(nBins,1);
+%else
+%    nTerm = [HalfBins:-1:1 , 0.25 , 1:HalfBins];
+%	Bias = zeros(nBins,1);
+%    TotLen = 0;
+%	for e=1:size(Epochs,1)
+%        EpochLen = Epochs(e,2)-Epochs(e,1);
+%%MAY BE USING EXTERNAL ARRAY TRUNCATING FUNCTION clip (added provisionally)        
+%        EpochBias = clip(EpochLen - nTerm*BinSize,0,inf)*BinSize;
+%        display(size(Bias))
+%        display(size(EpochBias))
+%        Bias = Bias+EpochBias';
+%        TotLen = TotLen + EpochLen;
+%	end
+%    Bias = Bias/TotLen/BinSize;
+%end
 
 % Trange = max(Res) - min(Res); % total time
 Trange = sum(diff(Epochs,[],2));
@@ -161,7 +164,7 @@ for g1=1:nGroups, for g2=g1:nGroups
 			warning(['Unknown Normalization method ', Normalization]);
 	end;
 % 	ccg(:,g1,g2) = flipud(Counts(:,g1,g2)) * Factor ./repmat(Bias,[1 nGroups,nGroups]); 
- 	ccg(:,g1,g2) = flipud(Counts(:,g1,g2)) * Factor ./Bias; 
+ 	ccg(:,g1,g2) = flipud(Counts(:,g1,g2)) * Factor ;%./Bias; 
 	
 	% now plot, if there is no output argument
 	if (nargout==0)
